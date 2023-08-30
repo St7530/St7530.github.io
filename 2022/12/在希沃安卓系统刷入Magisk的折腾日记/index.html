@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+  <title>
+    在希沃安卓系统刷入Magisk的折腾日记 |
+    
+    St7530&#39;s Blog
+  </title>
+  <!-- Icon -->
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <main class="content">
+    <section class="outer">
+  <article id="post-在希沃安卓系统刷入Magisk的折腾日记" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+      
+  
+  <h1 class="article-title" itemprop="name">
+    在希沃安卓系统刷入Magisk的折腾日记
+  </h1>
+  
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2022/12/%E5%9C%A8%E5%B8%8C%E6%B2%83%E5%AE%89%E5%8D%93%E7%B3%BB%E7%BB%9F%E5%88%B7%E5%85%A5Magisk%E7%9A%84%E6%8A%98%E8%85%BE%E6%97%A5%E8%AE%B0/" class="article-date">
+  <time datetime="2022-12-19T13:46:30.000Z" itemprop="datePublished">2022-12-19</time>
+</a>
+      
+    </div>
+    
+
+    
+    
+<div class="tocbot"></div>
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+      
+        <p>众所周知，学校教室的希沃seewo一体机采用的是“安卓套PC”的思路。我们班级的型号为FC70ED，下面就来分享一下我们在这个魔改过的安卓系统里安装Magisk的折腾路程。</p>
+<h2 id="魔改后的系统"><a href="#魔改后的系统" class="headerlink" title="魔改后的系统"></a>魔改后的系统</h2><p>希沃为了更好满足教学和办公需要，以及防止破解（比如我们现在正在做的事），把他们家的安卓系统做得十分特殊，具体表现如下：</p>
+<ol>
+<li>无法通过开机组合键进入Recovery或FASTBOOT模式（或者是我没有发现）<br>但可以通过<code>adb reboot recovery</code>进入Recovery，却居然无法通过<code>adb reboot bootloader</code>进入FASTBOOT，会卡在logo界面。进入自带的Recovery后可以发现这几乎就是一个安卓原生的Recovery，里边虽然有一个Reboot to Bootloader的选项，但是选择之后依然会卡在logo界面。</li>
+<li>无法通过USB连接（或者是我没有发现）<br>前置有Type-C接口和USB-A OTG接口，侧边也有一个USB-A OTG接口，但是我们无论如何都无法使用内置的PC模块通过USB连接上进行调试。<br>最后，通过分析希沃的系统文件，我们发现可以通过<code>adb connect 192.168.153.253</code>连接无线调试。</li>
+<li>无Ramdisk<br>这也是很关键的一点，起初因我没有注意到无Ramdisk会给刷入Magisk带来多么大的影响，就导致走了许多弯路。</li>
+<li>玩机资料匮乏<br>由于设备应用场景的特殊性，网上没有相关玩机资料可查，更不会有什么第三方Recovery这样的强大工具。我们唯一的技术支持可能是希沃的官方客服，虽然一些问题他们也无可奉告。</li>
+</ol>
+<p>但是也有一些“后门”：</p>
+<ol>
+<li><code>adb root</code>可用<br>这是我们成功刷入Magisk的关键。顺便提一下，<code>adb remount</code>也是可用的。估计是希沃留的后门，感谢！😀</li>
+<li>Bootloader未上锁<br>没有BL锁，再一次感谢希沃。😀</li>
+</ol>
+<h2 id="刷入Magisk"><a href="#刷入Magisk" class="headerlink" title="刷入Magisk"></a>刷入Magisk</h2><p>其实最有参考价值的便是<a target="_blank" rel="noopener" href="https://topjohnwu.github.io/Magisk/install.html">Magisk官方文档</a>，网上再多的教程也不如它来的权威、实用。</p>
+<p>由于没有Ramdisk，所以我们只能修补Recovery并替换。<em>（有vbmeta分区）</em>当初我们因为没有看到这句话，导致折腾时间明显加长。😂</p>
+<p><img src="/2022/12/%E5%9C%A8%E5%B8%8C%E6%B2%83%E5%AE%89%E5%8D%93%E7%B3%BB%E7%BB%9F%E5%88%B7%E5%85%A5Magisk%E7%9A%84%E6%8A%98%E8%85%BE%E6%97%A5%E8%AE%B0/Magisk_in_Recovery.png" alt="Magisk in Recovery"></p>
+<p>接下来我们会在希沃内置PC上进行操作，请确保你已经将<a target="_blank" rel="noopener" href="https://developer.android.google.cn/studio/releases/platform-tools">Platform-Tools</a>添加到环境变量，然后运行终端（或CMD）输入以下命令：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">adb connect <span class="number">192</span>.<span class="number">168</span>.<span class="number">153</span>.<span class="number">253</span></span><br><span class="line">adb devices</span><br><span class="line">adb root</span><br><span class="line">adb shell</span><br></pre></td></tr></table></figure>
+
+<p><em>通过<code>adb devices</code>检查是否已正常连接。进入adb shell后，你可以输入<code>whoami</code>来确保此时已经在使用root权限执行命令。</em></p>
+<p>接下来在adb shell中继续执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /dev</span><br><span class="line">find -name recovery</span><br></pre></td></tr></table></figure>
+
+<p>查找命令返回的结果，可知Recovery挂载的路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./block/recovery</span><br><span class="line">./block/platform/ffe07000.emmc/recovery</span><br><span class="line">./block/platform/ffe07000.emmc/by-name/recovery</span><br></pre></td></tr></table></figure>
+
+<p>经过校验，这三个路径的Recovery是完全相同的。我们把其中一个复制到&#x2F;sdcard目录下备用：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /dev/block/recovery /sdcard</span><br></pre></td></tr></table></figure>
+
+<p>现在回到安卓通道，请确保你已经安装了<a target="_blank" rel="noopener" href="https://github.com/topjohnwu/Magisk/releases/latest">Magisk app</a>。<em>你可以通过<code>adb install /path/to/Magisk.apk</code>来安装。</em></p>
+<ol>
+<li>打开Magisk app</li>
+<li>点击Magisk卡片旁的“安装”</li>
+<li>勾选“安装到Recovery”，然后下一步</li>
+<li>点击“选择并修补一个文件”，通过希沃自带的文件管理选择<code>/sdcard/recovery</code>，然后开始。</li>
+<li>等待Magisk提示完成，你会得到<code>/sdcard/Download/magisk_patched_[random_strings].img</code>文件，这是修补后的Recovery，其中的<code>[random_strings]</code>是一个随机值。</li>
+</ol>
+<p>现在再次回到PC终端的<code>adb shell</code>，继续执行：</p>
+<p><strong>注意：请将<code>[random_strings]</code>替换为实际的值！</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cp /sdcard/Download/magisk_patched_[random_strings].img /sdcard/recovery.img</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/recovery</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/platform/ffe07000.emmc/recovery</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/platform/ffe07000.emmc/by-name/recovery</span><br><span class="line">sync</span><br><span class="line">exit</span><br></pre></td></tr></table></figure>
+
+<p>至此，我们已经完成了Recovery的修补和替换，最后再执行：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb reboot recovery</span><br></pre></td></tr></table></figure>
+
+<p>这时设备并不会进入自带的Recovery，而是稍等片刻后再次出现开机动画。回到安卓通道，打开Magisk app，你会发现Magisk已经成功安装了。Enjoy! 😊🎉</p>
+<p><strong>注意：以后每次需要使用Magisk时，都必须先执行<code>adb reboot recovery</code>才可启用Magisk。</strong></p>
+<p>还有一点需要重视的是，当应用请求超级用户权限时，因为希沃自带侧边栏的遮挡，需要手动在Magisk设置中关闭“点按劫持保护”。如果你使用LSPosed和希沃自带桌面，你会发现希沃自带桌面也不支持添加LSPosed寄生器快捷方式，需要手动安装LSPosed Manager，模块运行正常。安卓不支持运行64位软件。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>呈现出来的文章看似行云流水、一气呵成，但是光这件事前前后后我们折腾了就有两个多月，虽然本文的内容可能还不够完善。</p>
+<p>另外我这里有从希沃官方获取到的这台型号的安卓固件和Windows镜像，以及安卓通过Windows联网的软件，有需要的小伙伴可以联系我。</p>
+<p>本文采用Markdown编写，在酷安的阅读体验可能不佳，建议前往我的博客阅读原文。还想问问各位酷友，有没有一种办法可以实现开机自动进入Recovery？</p>
+<h2 id="Credits"><a href="#Credits" class="headerlink" title="Credits"></a>Credits</h2><p>Thanks to <a target="_blank" rel="noopener" href="https://www.seewo.com/">seewo</a>.</p>
+<p>Thanks to <a target="_blank" rel="noopener" href="https://github.com/topjohnwu">topjohnwu</a> for providing <a target="_blank" rel="noopener" href="https://github.com/topjohnwu/Magisk">Magisk</a>.</p>
+<p>Thanks to <a target="_blank" rel="noopener" href="https://blog.csdn.net/wolfnx">lostnc</a> for providing <a target="_blank" rel="noopener" href="https://blog.csdn.net/wolfnx/article/details/104600257">a good idea</a>.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://blog.rainy.asia/2022/12/%E5%9C%A8%E5%B8%8C%E6%B2%83%E5%AE%89%E5%8D%93%E7%B3%BB%E7%BB%9F%E5%88%B7%E5%85%A5Magisk%E7%9A%84%E6%8A%98%E8%85%BE%E6%97%A5%E8%AE%B0/" data-id="cllxx93pr0001f4l731er27cg" class="article-share-link">
+        分享
+      </a>
+      
+    </footer>
+
+  </div>
+
+  
+  
+<nav class="article-nav">
+  
+  <a href="/2023/03/Sharing-about-Kevin-Roose-and-the-New-Bing-Sydney/" class="article-nav-link">
+    <strong class="article-nav-caption">前一篇</strong>
+    <div class="article-nav-title">
+      
+      Sharing about Kevin Roose and the New Bing Sydney
+      
+    </div>
+  </a>
+  
+  
+</nav>
+
+  
+
+  
+  
+  
+  
+
+</article>
+</section>
+    <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>St7530&#39;s Blog &copy; 2023</li>
+      
+        <li>
+          
+            <a href="https://beian.miit.gov.cn/" target="_blank"></a>
+            
+        </li>
+      
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>theme  <a target="_blank" rel="noopener" href="https://github.com/zhwangart/hexo-theme-ocean">Ocean</a></li>
+    </ul>
+    <p><ul class="list-inline">
+  
+  <li><i class="fe fe-smile-alt tooltip" data-tooltip="UV"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+  <li><i class="fe fe-bookmark tooltip" data-tooltip="PV"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul></p>
+  </div>
+</footer>
+  </main>
+  <aside class="sidebar">
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/top.png" alt="St7530&#39;s Blog"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">首页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="fe fe-search"></i>
+        搜索
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+  });
+</script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+
+</html>
