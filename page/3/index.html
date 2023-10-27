@@ -114,7 +114,7 @@
 <h2 id="刷入Magisk"><a href="#刷入Magisk" class="headerlink" title="刷入Magisk"></a>刷入Magisk</h2><h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>其实最有参考价值的便是<a target="_blank" rel="noopener" href="https://topjohnwu.github.io/Magisk/install.html">Magisk官方文档</a>，网上再多的教程也不如它来的权威、实用。</p>
 <p>由于没有Ramdisk，所以我们只能修补Recovery并替换。<em>（有vbmeta分区）</em>当初我们因为没有看到这句话，导致折腾时间明显加长。😂</p>
 <p><img src="/2022/12/%E5%9C%A8%E5%B8%8C%E6%B2%83%E5%AE%89%E5%8D%93%E7%B3%BB%E7%BB%9F%E5%88%B7%E5%85%A5Magisk%E7%9A%84%E6%8A%98%E8%85%BE%E6%97%A5%E8%AE%B0/Magisk_in_Recovery.png" alt="Magisk in Recovery"></p>
-<p>要想通过希沃内置PC连接到安卓系统，**必须将Windows中用于与安卓互通的Realtek网卡IPv4地址设置为<code>192.168.153.254</code>**，否则将无法连接。值得注意的是，这在希沃出厂的Win10系统是已经配置好的，所以你大概率不需要再手动额外配置。但如果你重装了非希沃原厂映像（比如我全新安装了Windows 11），就必须手动设置这个IP地址。</p>
+<p>要想通过希沃内置PC连接到安卓系统，<strong>必须将Windows中用于与安卓互通的Realtek网卡IPv4地址设置为<code>192.168.153.254</code>，否则将无法连接。</strong>值得注意的是，这在希沃出厂的Win10系统是已经配置好的，所以你大概率不需要再手动额外配置。但如果你重装了非希沃原厂映像（比如我全新安装了Windows 11），就必须手动设置这个IP地址。</p>
 <p>接下来我们会在希沃内置PC上进行操作，请确保你的IP地址设置正确，并已经将<a target="_blank" rel="noopener" href="https://developer.android.google.cn/studio/releases/platform-tools">Platform-Tools</a>添加到环境变量，然后运行终端（或CMD）输入以下命令：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">adb connect <span class="number">192</span>.<span class="number">168</span>.<span class="number">153</span>.<span class="number">253</span></span><br><span class="line">adb devices</span><br><span class="line">adb root</span><br><span class="line">adb shell</span><br></pre></td></tr></table></figure>
 
@@ -148,7 +148,7 @@
 <p>查找命令返回的结果，可知Boot挂载的路径：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./block/boot</span><br><span class="line">./block/platform/ffe07000.emmc/boot</span><br><span class="line">./block/platform/ffe07000.emmc/by-name/boot</span><br></pre></td></tr></table></figure>
 
-<p>经过校验，这三个路径的Recovery是完全相同的。我们把其中一个复制到&#x2F;sdcard目录下备用：</p>
+<p>经过校验，这三个路径的Boot是完全相同的。我们把其中一个复制到&#x2F;sdcard目录下备用：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /dev/block/boot /sdcard</span><br></pre></td></tr></table></figure>
 
 <p>现在回到安卓通道，修补Boot映像：</p>
@@ -209,7 +209,7 @@
       
         <li>
           
-            <a href="https://beian.miit.gov.cn/" target="_blank"></a>
+            <a href="mailto:st75306@163.com" target="_blank">st75306@163.com</a>
             
         </li>
       
