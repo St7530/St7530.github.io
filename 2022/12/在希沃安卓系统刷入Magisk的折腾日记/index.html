@@ -81,15 +81,23 @@
 <li><code>adb root</code>可用<br>这是我们成功刷入Magisk的关键。顺便提一下，<code>adb remount</code>也是可用的。估计是希沃留的后门。😀</li>
 <li>Bootloader未上锁<br>没有BL锁，感谢希沃。😀</li>
 </ol>
-<h2 id="刷入Magisk"><a href="#刷入Magisk" class="headerlink" title="刷入Magisk"></a>刷入Magisk</h2><h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>其实最有参考价值的便是<a target="_blank" rel="noopener" href="https://topjohnwu.github.io/Magisk/install.html">Magisk官方文档</a>，网上再多的教程也不如它来的权威、实用。</p>
+<h2 id="刷入Magisk"><a href="#刷入Magisk" class="headerlink" title="刷入Magisk"></a>刷入Magisk</h2><h3 id="准备阶段"><a href="#准备阶段" class="headerlink" title="准备阶段"></a>准备阶段</h3><p>其实最有参考价值的便是<a target="_blank" rel="noopener" href="https://topjohnwu.github.io/Magisk/install.html">Magisk官方文档</a>，网上再多的教程也不如它来的权威、实用。</p>
 <p>由于没有Ramdisk，所以我们只能修补Recovery并替换。<em>（有vbmeta分区）</em>当初我们因为没有看到这句话，导致折腾时间明显加长。😂</p>
 <p><img src="/2022/12/%E5%9C%A8%E5%B8%8C%E6%B2%83%E5%AE%89%E5%8D%93%E7%B3%BB%E7%BB%9F%E5%88%B7%E5%85%A5Magisk%E7%9A%84%E6%8A%98%E8%85%BE%E6%97%A5%E8%AE%B0/Magisk_in_Recovery.png" alt="Magisk in Recovery"></p>
-<p>要想通过希沃内置PC连接到安卓系统，<strong>必须将Windows中用于与安卓互通的Realtek网卡IPv4地址设置为<code>192.168.153.254</code>，否则将无法连接。</strong>值得注意的是，这在希沃出厂的Win10系统是已经配置好的，所以你大概率不需要再手动额外配置。但如果你重装了非希沃原厂映像（比如我全新安装了Windows 11），就必须手动设置这个IP地址。</p>
-<p>接下来我们会在希沃内置PC上进行操作，请确保你的IP地址设置正确，并已经将<a target="_blank" rel="noopener" href="https://developer.android.google.cn/studio/releases/platform-tools">Platform-Tools</a>添加到环境变量，然后运行终端（或CMD）输入以下命令：</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">adb connect <span class="number">192</span>.<span class="number">168</span>.<span class="number">153</span>.<span class="number">253</span></span><br><span class="line">adb devices</span><br><span class="line">adb root</span><br><span class="line">adb shell</span><br></pre></td></tr></table></figure>
+<p>接下来我们会在希沃内置PC上进行操作，请确保你已知晓并做好如下准备：</p>
+<ol>
+<li>IP地址设置正确<br>要想通过希沃内置PC连接到安卓系统，<strong>必须设置Windows中用于与安卓互通的Realtek网卡的IPv4地址为<code>192.168.153.254</code>、子网掩码为<code>255.255.255.0</code>，否则将无法连接。</strong>值得注意的是，这在希沃出厂的Win10系统是已经配置好的，所以你大概率不需要再手动额外配置。但如果你重装了非希沃原厂映像（比如我全新安装了Windows 11），就必须手动设置这个IP地址。</li>
+<li>将<a target="_blank" rel="noopener" href="https://developer.android.google.cn/studio/releases/platform-tools">Platform-Tools</a>添加到环境变量<br><em>如果你不想将其添加到环境变量，请确保在<code>adb.exe</code>所在路径执行以下操作。</em></li>
+</ol>
+<p>然后运行终端（或CMD）输入以下命令：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb connect <span class="number">192</span>.<span class="number">168</span>.<span class="number">153</span>.<span class="number">253</span></span><br><span class="line">adb devices</span><br></pre></td></tr></table></figure>
 
-<p><em>通过<code>adb devices</code>检查是否已正常连接。进入adb shell后，你可以输入<code>whoami</code>来确保此时已经在使用root权限执行命令。</em></p>
-<h3 id="修补并替换Recovery"><a href="#修补并替换Recovery" class="headerlink" title="修补并替换Recovery"></a>修补并替换Recovery</h3><p>接下来在adb shell中继续执行：</p>
+<p><em>通过<code>adb devices</code>检查是否已正常连接。</em>如果你尚未安装<a target="_blank" rel="noopener" href="https://github.com/topjohnwu/Magisk/releases/latest">Magisk app</a>，请在正常连接后通过<code>adb install [Magisk APK路径]</code>来安装。</p>
+<h3 id="修补并替换Recovery"><a href="#修补并替换Recovery" class="headerlink" title="修补并替换Recovery"></a>修补并替换Recovery</h3><p>继续执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb root</span><br><span class="line">adb shell</span><br></pre></td></tr></table></figure>
+
+<p><em>进入adb shell后，你可以输入<code>whoami</code>来确保此时已经在使用root权限执行命令。</em></p>
+<p>接下来在adb shell中继续执行：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /dev</span><br><span class="line">find -name recovery</span><br></pre></td></tr></table></figure>
 
 <p>查找命令返回的结果，可知Recovery挂载的路径：</p>
@@ -98,20 +106,20 @@
 <p>经过校验，这三个路径的Recovery是完全相同的。我们把其中一个复制到&#x2F;sdcard目录下备用：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /dev/block/recovery /sdcard</span><br></pre></td></tr></table></figure>
 
-<p>现在回到安卓通道，请确保你已经安装了<a target="_blank" rel="noopener" href="https://github.com/topjohnwu/Magisk/releases/latest">Magisk app</a>。<em>你可以通过<code>adb install /path/to/Magisk.apk</code>来安装。</em></p>
+<p>现在回到安卓通道，修补Recovery映像：</p>
 <ol>
 <li>打开Magisk app</li>
 <li>点击Magisk卡片旁的“安装”</li>
-<li>勾选“安装到Recovery”，然后下一步</li>
+<li>勾选“安装到Recovery”，然后下一步。</li>
 <li>点击“选择并修补一个文件”，通过希沃自带的文件管理选择<code>/sdcard/recovery</code>，然后开始。</li>
-<li>等待Magisk提示完成，你会得到<code>/sdcard/Download/magisk_patched_[random_strings].img</code>文件，这是修补后的Recovery，其中的<code>[random_strings]</code>是一个随机值。</li>
+<li>等待Magisk提示完成，你会得到<code>/sdcard/Download/magisk_patched-[random_strings].img</code>文件，这是修补后的Recovery，其中的<code>[random_strings]</code>是一个随机值。</li>
 </ol>
 <p>现在再次回到PC终端的<code>adb shell</code>，继续执行：</p>
 <p><strong>注意：请将<code>[random_strings]</code>替换为实际的值！</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cp /sdcard/Download/magisk_patched_[random_strings].img /sdcard/recovery.img</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/recovery</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/platform/ffe07000.emmc/recovery</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/platform/ffe07000.emmc/by-name/recovery</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cp /sdcard/Download/magisk_patched-[random_strings].img /sdcard/recovery.img</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/recovery</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/platform/ffe07000.emmc/recovery</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/platform/ffe07000.emmc/by-name/recovery</span><br></pre></td></tr></table></figure>
 
 <p>至此，我们已经完成了Recovery的修补和替换。如果此时执行<code>adb reboot recovery</code>，设备并不会进入自带的Recovery，而是稍等片刻后再次出现开机动画。回到安卓通道，打开Magisk app，你会发现Magisk已经成功安装了。</p>
-<h3 id="修补并替换Boot"><a href="#修补并替换Boot" class="headerlink" title="修补并替换Boot"></a>修补并替换Boot</h3><p>如果只修补并替换Recovery，那么在下一次安卓完全重启后，Recovery会回滚成设备自带的Recovery。如果在这之后再执行<code>adb reboot recovery</code>，设备就会进入自带的Recovery，更不会启用Magisk。所以我们还需要修补并替换Boot映像，操作与上文的修补并替换Recovery大同小异。</p>
+<h3 id="修补并替换Boot"><a href="#修补并替换Boot" class="headerlink" title="修补并替换Boot"></a>修补并替换Boot</h3><p>如果只修补并替换Recovery，那么在下一次安卓完全重启后，Recovery会回滚成设备自带的Recovery。如果在这之后再执行<code>adb reboot recovery</code>，设备就会进入自带的Recovery，自然不会启用Magisk。所以我们还需要修补并替换Boot映像，操作与上文的修补并替换Recovery大同小异。</p>
 <p>继续在<code>adb shell</code>中执行：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /dev</span><br><span class="line">find -name boot</span><br></pre></td></tr></table></figure>
 
@@ -125,20 +133,20 @@
 <ol>
 <li>打开Magisk app</li>
 <li>点击Magisk卡片旁的“安装”</li>
-<li>勾选“安装到Recovery”，然后下一步</li>
+<li>勾选“安装到Recovery”，然后下一步。</li>
 <li>点击“选择并修补一个文件”，通过希沃自带的文件管理选择<code>/sdcard/boot</code>，然后开始。</li>
-<li>等待Magisk提示完成，你会得到<code>/sdcard/Download/magisk_patched_[random_strings].img</code>文件，这是修补后的Boot，其中的<code>[random_strings]</code>是一个随机值。</li>
+<li>等待Magisk提示完成，你会得到<code>/sdcard/Download/magisk_patched-[random_strings].img</code>文件，这是修补后的Boot，其中的<code>[random_strings]</code>是一个随机值。</li>
 </ol>
 <p>现在再次回到PC终端的<code>adb shell</code>，继续执行：</p>
 <p><strong>注意：请将<code>[random_strings]</code>替换为实际的值！</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cp /sdcard/Download/magisk_patched_[random_strings].img /sdcard/boot.img</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/boot</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/platform/ffe07000.emmc/boot</span><br><span class="line">dd if=/sdcard/recovery.img of=/dev/block/platform/ffe07000.emmc/by-name/boot</span><br><span class="line">sync</span><br><span class="line">exit</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cp /sdcard/Download/magisk_patched-[random_strings].img /sdcard/boot.img</span><br><span class="line">dd if=/sdcard/boot.img of=/dev/block/boot</span><br><span class="line">dd if=/sdcard/boot.img of=/dev/block/platform/ffe07000.emmc/boot</span><br><span class="line">dd if=/sdcard/boot.img of=/dev/block/platform/ffe07000.emmc/by-name/boot</span><br><span class="line">sync</span><br><span class="line">exit</span><br></pre></td></tr></table></figure>
 
 <p>至此，我们已经完成了Boot的修补和替换。最后再执行：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb reboot recovery</span><br></pre></td></tr></table></figure>
 
-<p>这时设备并不会进入自带的Recovery，而是稍等片刻后再次出现开机动画，并且安卓完全重启后Recovery也不会恢复。回到安卓通道，打开Magisk app，你会发现Magisk已经成功安装了。Enjoy! 😊🎉</p>
+<p>这时设备并不会进入自带的Recovery，而是稍等片刻后再次出现开机动画，并且安卓完全重启后Recovery也不会回滚。回到安卓通道，打开Magisk app，你会发现Magisk已经成功安装了。Enjoy! 😊🎉</p>
 <p><strong>注意：以后每次需要使用Magisk时，都必须先执行<code>adb reboot recovery</code>才可启用Magisk。</strong></p>
-<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p><strong>本文于2023&#x2F;10&#x2F;27修正。</strong></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p><strong>本文于2023&#x2F;11&#x2F;11第2次修正。</strong></p>
 <p>有一点需要重视的是，当应用请求超级用户权限时，因为希沃自带侧边栏的遮挡，需要手动在Magisk设置中关闭“点按劫持保护”。如果你使用LSPosed和希沃自带桌面，你会发现希沃自带桌面也不支持添加LSPosed寄生器快捷方式，需要手动安装LSPosed Manager，模块运行正常。这一款安卓不支持运行64位软件。</p>
 <p>另外我这里有从希沃官方获取到的这台型号的安卓固件和Windows镜像，以及安卓通过Windows联网的软件，有需要的小伙伴可以联系我。</p>
 <h2 id="Credits"><a href="#Credits" class="headerlink" title="Credits"></a>Credits</h2><p>Thank <a target="_blank" rel="noopener" href="https://www.seewo.com/">seewo</a>.</p>
@@ -158,20 +166,6 @@
 
   
   
-<nav class="article-nav">
-  
-  <a href="/2023/03/Sharing-about-Kevin-Roose-and-the-New-Bing-Sydney/" class="article-nav-link">
-    <strong class="article-nav-caption">前一篇</strong>
-    <div class="article-nav-title">
-      
-      Sharing about Kevin Roose and the New Bing Sydney
-      
-    </div>
-  </a>
-  
-  
-</nav>
-
   
 
   
