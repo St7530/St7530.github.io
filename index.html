@@ -176,6 +176,26 @@
 
 <p>这时设备并不会进入自带的Recovery，而是稍等片刻后再次出现开机动画，并且安卓完全重启后Recovery也不会回滚。回到安卓通道，打开Magisk app，你会发现Magisk已经成功安装了。Enjoy! 😊🎉</p>
 <p><strong>注意：以后每次需要使用Magisk时，都必须先执行<code>adb reboot recovery</code>才可启用Magisk。</strong></p>
+<h3 id="便捷刷入Magisk（实验性）"><a href="#便捷刷入Magisk（实验性）" class="headerlink" title="便捷刷入Magisk（实验性）"></a>便捷刷入Magisk（实验性）</h3><p>不想手动输入繁杂的命令？我写了一个程序帮助快速刷入Magisk！</p>
+<p><strong>EasyMagisk for seewoFC70ED</strong></p>
+<p><strong>当前最新版本：1.1 (2023&#x2F;11&#x2F;24)</strong></p>
+<p><strong>下载链接：</strong> <a href="EasyMagisk%20for%20seewoFC70ED%201.1%20By%20St7530.bat">St7530’s Blog</a> <a target="_blank" rel="noopener" href="https://st7530.lanzout.com/iID8M1furw1c">蓝奏云</a> <a target="_blank" rel="noopener" href="https://github.com/St7530/my/blob/main/EasySetup/EasyMagisk%20for%20seewoFC70ED/EasyMagisk%20for%20seewoFC70ED%201.1%20By%20St7530.bat">GitHub</a></p>
+<p>警告：</p>
+<ol>
+<li><p>本程序为 seewo FC70ED 机型专用，请在希沃内置PC下运行本程序，非同款机型请慎重使用！</p>
+</li>
+<li><p>请仔细阅读并严格按照本程序的提示进行操作！</p>
+</li>
+</ol>
+<p>注意：</p>
+<ol>
+<li><p>请将 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/studio/releases/platform-tools">Platform-Tools</a> 添加到环境变量，或将 adb.exe 和 AdbWinApi.dll 置于程序目录中</p>
+</li>
+<li><p>请设置 Windows 中用于与安卓互通的 Realtek 网卡的 IPv4 地址为 192.168.153.254 、子网掩码为 255.255.255.0 </p>
+</li>
+<li><p>请将 <a target="_blank" rel="noopener" href="https://github.com/topjohnwu/Magisk/releases/latest">Magisk APK</a> 安装包置于程序目录中并重命名为 “Magisk.apk” ，以便自动安装。</p>
+</li>
+</ol>
 <h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p><strong>本文于2023&#x2F;11&#x2F;11第2次修正。</strong></p>
 <p>有一点需要重视的是，当应用请求超级用户权限时，因为希沃自带侧边栏的遮挡，需要手动在Magisk设置中关闭“点按劫持保护”。如果你使用LSPosed和希沃自带桌面，你会发现希沃自带桌面也不支持添加LSPosed寄生器快捷方式，需要手动安装LSPosed Manager，模块运行正常。这一款安卓不支持运行64位软件。</p>
 <p>另外我这里有从希沃官方获取到的这台型号的安卓固件和Windows镜像，以及安卓通过Windows联网的软件，有需要的小伙伴可以联系我。</p>
@@ -186,7 +206,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.rainy.asia/2022/12/%E5%9C%A8%E5%B8%8C%E6%B2%83%E5%AE%89%E5%8D%93%E7%B3%BB%E7%BB%9F%E5%88%B7%E5%85%A5Magisk%E7%9A%84%E6%8A%98%E8%85%BE%E6%97%A5%E8%AE%B0/" data-id="clo8qpkij00016gl720ii6r7s" class="article-share-link">
+      <a data-url="https://blog.rainy.asia/2022/12/%E5%9C%A8%E5%B8%8C%E6%B2%83%E5%AE%89%E5%8D%93%E7%B3%BB%E7%BB%9F%E5%88%B7%E5%85%A5Magisk%E7%9A%84%E6%8A%98%E8%85%BE%E6%97%A5%E8%AE%B0/" data-id="clpcr8ayz0000vcl7dhk493na" class="article-share-link">
         分享
       </a>
       
