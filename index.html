@@ -98,7 +98,7 @@
         
       
       
-        <p>众所周知，学校教室的希沃seewo一体机采用的是“安卓套PC”的思路。我们班级的型号为FC70ED，下面就来分享一下我们在这个魔改过的安卓系统里安装Magisk的折腾路程。</p>
+        <p>众所周知，学校教室的希沃seewo一体机采用的是“安卓套PC”的思路。我们班级的型号为FC70ED，下面就来分享一下我们在这个魔改过的安卓系统里安装Magisk的折腾历程。</p>
 <h2 id="魔改后的系统"><a href="#魔改后的系统" class="headerlink" title="魔改后的系统"></a>魔改后的系统</h2><p>希沃为了更好满足教学和办公需要，以及防止破解（比如我们现在正在做的事），把他们家的安卓系统做得十分特殊，具体表现如下：</p>
 <ol>
 <li>无法通过开机组合键进入Recovery或FASTBOOT模式（或者是我没有发现）<br>但可以通过<code>adb reboot recovery</code>进入Recovery，却居然无法通过<code>adb reboot bootloader</code>进入FASTBOOT，会卡在logo界面。进入自带的Recovery后可以发现这几乎就是一个安卓原生的Recovery，里边虽然有一个Reboot to Bootloader的选项，但是选择之后依然会卡在logo界面。</li>
@@ -108,21 +108,25 @@
 </ol>
 <p>但是也有一些“后门”：</p>
 <ol>
-<li><code>adb root</code>可用<br>这是我们成功刷入Magisk的关键。顺便提一下，<code>adb remount</code>也是可用的。估计是希沃留的后门。😀</li>
+<li><code>adb root</code>可用<br>固件为userdebug版本，这是我们成功刷入Magisk的关键。顺便提一下，<code>adb remount</code>也是可用的。估计是希沃留的后门。😀</li>
 <li>Bootloader未上锁<br>没有BL锁，感谢希沃。😀</li>
 </ol>
-<h2 id="刷入Magisk"><a href="#刷入Magisk" class="headerlink" title="刷入Magisk"></a>刷入Magisk</h2><h3 id="准备阶段"><a href="#准备阶段" class="headerlink" title="准备阶段"></a>准备阶段</h3><p>其实最有参考价值的便是<a target="_blank" rel="noopener" href="https://topjohnwu.github.io/Magisk/install.html">Magisk官方文档</a>，网上再多的教程也不如它来的权威、实用。</p>
+<h2 id="手动刷入Magisk"><a href="#手动刷入Magisk" class="headerlink" title="手动刷入Magisk"></a>手动刷入Magisk</h2><h3 id="准备阶段"><a href="#准备阶段" class="headerlink" title="准备阶段"></a>准备阶段</h3><p>其实最有参考价值的便是<a target="_blank" rel="noopener" href="https://topjohnwu.github.io/Magisk/install.html">Magisk官方文档</a>，网上再多的教程也不如它来的权威、实用。</p>
 <p>由于没有Ramdisk，所以我们只能修补Recovery并替换。<em>（有vbmeta分区）</em>当初我们因为没有看到这句话，导致折腾时间明显加长。😂</p>
 <p><img src="/2022/12/%E5%9C%A8%E5%B8%8C%E6%B2%83%E5%AE%89%E5%8D%93%E7%B3%BB%E7%BB%9F%E5%88%B7%E5%85%A5Magisk%E7%9A%84%E6%8A%98%E8%85%BE%E6%97%A5%E8%AE%B0/Magisk_in_Recovery.png" alt="Magisk in Recovery"></p>
 <p>接下来我们会在希沃内置PC上进行操作，请确保你已知晓并做好如下准备：</p>
 <ol>
-<li>IP地址设置正确<br>要想通过希沃内置PC连接到安卓系统，<strong>必须设置Windows中用于与安卓互通的Realtek网卡的IPv4地址为<code>192.168.153.254</code>、子网掩码为<code>255.255.255.0</code>，否则将无法连接。</strong>值得注意的是，这在希沃出厂的Win10系统是已经配置好的，所以你大概率不需要再手动额外配置。但如果你重装了非希沃原厂映像（比如我全新安装了Windows 11），就必须手动设置这个IP地址。</li>
-<li>将<a target="_blank" rel="noopener" href="https://developer.android.google.cn/studio/releases/platform-tools">Platform-Tools</a>添加到环境变量<br><em>如果你不想将其添加到环境变量，请确保在<code>adb.exe</code>所在路径执行以下操作。</em></li>
+<li><p>开启USB调试<br>你可以先通过连点版本号启用开发者选项，再在开发者选项中开启“USB调试”开关。</p>
+</li>
+<li><p>IP地址设置正确<br>要想通过希沃内置PC连接到安卓系统，<strong>必须设置Windows中用于与安卓互通的Realtek网卡的IPv4地址为<code>192.168.153.254</code>、子网掩码为<code>255.255.255.0</code>，否则将无法连接。</strong>值得注意的是，这在希沃出厂的Win10系统是已经配置好的，所以你大概率不需要再手动额外配置。但如果你重装了非希沃原厂映像（比如我全新安装了Windows 11），就必须手动设置这个IP地址。</p>
+</li>
+<li><p>将<a target="_blank" rel="noopener" href="https://developer.android.google.cn/studio/releases/platform-tools">Platform-Tools</a>添加到环境变量<br><em>如果你不想将其添加到环境变量，请确保在<code>adb.exe</code>所在路径执行以下操作。</em></p>
+</li>
 </ol>
 <p>然后运行终端（或CMD）输入以下命令：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb connect <span class="number">192</span>.<span class="number">168</span>.<span class="number">153</span>.<span class="number">253</span></span><br><span class="line">adb devices</span><br></pre></td></tr></table></figure>
 
-<p><em>通过<code>adb devices</code>检查是否已正常连接。</em>如果你尚未安装<a target="_blank" rel="noopener" href="https://github.com/topjohnwu/Magisk/releases/latest">Magisk app</a>，请在正常连接后通过<code>adb install [Magisk APK路径]</code>来安装。</p>
+<p><em>通过<code>adb devices</code>检查是否已正常连接，若未正常连接，你可以通过<code>adb kill-server</code>重启ADB后再试。</em>如果你尚未安装<a target="_blank" rel="noopener" href="https://github.com/topjohnwu/Magisk/releases/latest">Magisk app</a>，请在正常连接后通过<code>adb install [Magisk APK路径]</code>来安装。</p>
 <h3 id="修补并替换Recovery"><a href="#修补并替换Recovery" class="headerlink" title="修补并替换Recovery"></a>修补并替换Recovery</h3><p>继续执行：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb root</span><br><span class="line">adb shell</span><br></pre></td></tr></table></figure>
 
@@ -176,10 +180,10 @@
 
 <p>这时设备并不会进入自带的Recovery，而是稍等片刻后再次出现开机动画，并且安卓完全重启后Recovery也不会回滚。回到安卓通道，打开Magisk app，你会发现Magisk已经成功安装了。Enjoy! 😊🎉</p>
 <p><strong>注意：以后每次需要使用Magisk时，都必须先执行<code>adb reboot recovery</code>才可启用Magisk。</strong></p>
-<h3 id="便捷刷入Magisk（实验性）"><a href="#便捷刷入Magisk（实验性）" class="headerlink" title="便捷刷入Magisk（实验性）"></a>便捷刷入Magisk（实验性）</h3><p>不想手动输入繁杂的命令？我写了一个程序帮助快速刷入Magisk！</p>
+<h2 id="便捷刷入Magisk"><a href="#便捷刷入Magisk" class="headerlink" title="便捷刷入Magisk"></a>便捷刷入Magisk</h2><p>不想手动输入繁杂的命令？我写了一个程序帮助在此机型上快速刷入Magisk！</p>
 <p><strong>EasyMagisk for seewoFC70ED</strong></p>
 <p><strong>当前最新版本：1.1 (2023&#x2F;11&#x2F;24)</strong></p>
-<p><strong>下载链接：</strong> <a target="_blank" rel="noopener" href="https://st7530.lanzout.com/iID8M1furw1c">蓝奏云</a> <a target="_blank" rel="noopener" href="https://github.com/St7530/my/blob/main/EasySetup/EasyMagisk%20for%20seewoFC70ED/EasyMagisk%20for%20seewoFC70ED%201.1%20By%20St7530.bat">GitHub</a></p>
+<p><strong>下载链接：</strong> <a target="_blank" rel="noopener" href="https://st7530.lanzout.com/b00rwgwdg">蓝奏云[密码afk1]</a> <a target="_blank" rel="noopener" href="https://github.com/St7530/my/tree/main/EasySetup/EasyMagisk%20for%20seewoFC70ED">GitHub</a></p>
 <p>警告：</p>
 <ol>
 <li>本程序为 seewo FC70ED 机型专用，请在希沃内置PC下运行本程序，非同款机型请慎重使用！</li>
@@ -189,9 +193,10 @@
 <ol>
 <li>请将 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/studio/releases/platform-tools">Platform-Tools</a> 添加到环境变量，或将<code>adb.exe</code>和<code>AdbWinApi.dll</code>置于程序目录中</li>
 <li>请设置 Windows 中用于与安卓互通的 Realtek 网卡的 IPv4 地址为<code>192.168.153.254</code>、子网掩码为<code>255.255.255.0</code> </li>
+<li>请开启安卓的<code>USB调试</code>开关</li>
 <li>请将 <a target="_blank" rel="noopener" href="https://github.com/topjohnwu/Magisk/releases/latest">Magisk APK</a> 安装包置于程序目录中并重命名为<code>Magisk.apk</code>，以便自动安装。</li>
 </ol>
-<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p><strong>本文于2023&#x2F;11&#x2F;11第2次修正。</strong></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p><strong>本文于2023&#x2F;12&#x2F;8第3次修正。</strong></p>
 <p>有一点需要重视的是，当应用请求超级用户权限时，因为希沃自带侧边栏的遮挡，需要手动在Magisk设置中关闭“点按劫持保护”。如果你使用LSPosed和希沃自带桌面，你会发现希沃自带桌面也不支持添加LSPosed寄生器快捷方式，需要手动安装LSPosed Manager，模块运行正常。这一款安卓不支持运行64位软件。</p>
 <p>另外我这里有从希沃官方获取到的这台型号的安卓固件和Windows镜像，以及安卓通过Windows联网的软件，有需要的小伙伴可以联系我。</p>
 <h2 id="Credits"><a href="#Credits" class="headerlink" title="Credits"></a>Credits</h2><p>Thank <a target="_blank" rel="noopener" href="https://www.seewo.com/">seewo</a>.</p>
